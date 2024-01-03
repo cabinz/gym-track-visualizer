@@ -85,12 +85,18 @@ def draw_bar_new(x, df, ax):
 
     # Draw the stacked bar chart
     base_color = 'dodgerblue'  # 'skyblue'
+    bg_color, bg_alpha = 'grey', 0.1
     for i, row in df.iterrows():
-        bottom = 0  # Initialize the bottom of the stack
         max_weight = row[COL_MAX_PASS_W]
 
+        # Background bar
+        max_possible_capacity = max_weight * FULL_SET_REPS * (MAX_SET_NUM - MIN_SET_NUM + 1)
+        ax.bar(x[i], max_possible_capacity, color=bg_color, alpha=bg_alpha)
+
+        # Stacked bar
+        bottom = 0  # Initialize the bottom of the stack
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
-        delta_alpha = 0.75
+        delta_alpha = 0.5
         delta_weight = row[COL_MAX_PASS_W] - row[COL_MIN_PASS_W]
         for weight_col, reps_col in valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
@@ -117,9 +123,11 @@ def draw_bar_new(x, df, ax):
 
         for c, a in sort_by_decr_2nd_elem(mapping.values()):
             ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color)
-            bottom += c  # Update the bottom of the stack for the next sub-ba
+            bottom += c  # Update the bottom of the stack for the next sub-bar
 
-    ax.bar(x[0], 0, color=base_color, label='Capacity')  # Only for a base color legend
+    # Only for legends of capacity
+    ax.bar(x[0], 0, color=base_color, label='Actual Capacity')
+    ax.bar(x[0], 0, color=bg_color, alpha=bg_alpha, label='Target Capacity')
 
     # Set labels and title
     ax.set_xlabel('Date')
