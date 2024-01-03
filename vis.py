@@ -84,7 +84,7 @@ def draw_bar_new(x, df, ax):
 
     # Draw the stacked bar chart
     base_color = 'dodgerblue'  # 'skyblue'
-    bg_color, bg_alpha = 'grey', 0.1
+    bg_color, bg_alpha = 'grey', 0.15
     for i, row in df.iterrows():
         max_weight = row[COL_MAX_PASS_W]
 
