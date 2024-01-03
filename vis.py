@@ -21,7 +21,7 @@ def draw(df, ax, title, draw_skip_days=False):
     ax_left = ax
     ax_right = ax.twinx()
 
-    draw_bar(x, df, ax_left)
+    draw_bar_new(x, df, ax_left)
     draw_plot(x, df, ax_right)  # Plot after bar to draw the line plot on the top.
 
     # Horizontal (X-)axis
@@ -65,3 +65,53 @@ def draw_bar(x, df, ax):
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
 
     return ax.get_figure()
+
+
+def draw_bar_new(x, df, ax):
+    """Here, capacity are accumulated regardless of the completion of each set.
+
+    The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
+    The lightest bars accumulate capacity of sets with weights <= COL_MIN_SET_W.
+    """
+    df = anlys.update_weight_boundaries(df)
+
+    # Draw the stacked bar chart
+    base_color = 'dodgerblue'  # 'skyblue'
+    for i, row in df.iterrows():
+        bottom = 0  # Initialize the bottom of the stack
+        max_weight = row[COL_MAX_SET_W]
+
+        mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
+        delta_alpha = 0.75
+        delta_weight = row[COL_MAX_SET_W] - row[COL_MIN_SET_W]
+        for weight_col, reps_col in valid_set_cols():
+            weight, reps = row[weight_col], row[reps_col]
+            if pd.isnull(weight) or pd.isnull(reps):
+                continue
+            capacity = weight * reps
+            if weight < max_weight:
+                if weight not in mapping:
+                    # min() is needed because weight can be smaller than row[COL_MIN_SET_W]
+                    # since COL_MIN_SET_W consider only the complete set
+                    # i.e. the lightest bars accumulate capacity of all sets with weight <= row[COL_MIN_SET_W]
+                    dist_to_max = min(max_weight - weight, delta_weight)
+                    alpha = 1 - delta_alpha * (dist_to_max / delta_weight)
+                    mapping[weight] = [0, alpha]
+                mapping[weight][0] += capacity
+            else:
+                # This branch covers all records of weight >= max_weight
+                # (including those incomplete set with weight larger than row[COL_MAX_SET_W])
+                # i.e. the darkest bars cover accumulate of all sets with weight >= row[COL_MAX_SET_W]
+                mapping[max_weight][0] += capacity
+
+        def sort_by_decr_2nd_elem(lt):
+            return sorted(lt, key=lambda sub_lt: sub_lt[1], reverse=True)
+
+        for c, a in sort_by_decr_2nd_elem(mapping.values()):
+            ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color)
+            bottom += c  # Update the bottom of the stack for the next sub-ba
+
+    # Set labels and title
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Capacity')
+    ax.set_title('Stacked Bar Chart of Training Capacities')
