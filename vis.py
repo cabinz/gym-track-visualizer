@@ -31,22 +31,23 @@ def draw(df, ax, title, draw_skip_days=False):
         ax.set_xticks(x, df[COL_DATE])
     ax.set_xticklabels(df[COL_DATE].dt.strftime('%Y-%m-%d'), rotation=90)
 
-    # Add a legend for both plots
-    lines, labels = ax.get_legend_handles_labels()
+    # Add legends for both plots
+    lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    cmb_labels = labels + labels2
-
-    ax.legend(lines + lines2, cmb_labels, ncol=len(cmb_labels),
+    cmb_labels = labels1 + labels2
+    ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels),
               # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
               # `loc` specifies the location of legends in the bonding box
               # `expand` mode makes legends horizontally filled up the bounding box
               bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left', mode='expand')
+    # Title
     ax.set_title(title.title(), y=1.2)
 
     return ax.get_figure()
 
 
 def draw_plot(x, df, ax):
+    df = anlys.update_max_set(df)
 
     ax.plot(x, df[COL_MAX_SET], color='salmon', marker='o', label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
@@ -55,6 +56,7 @@ def draw_plot(x, df, ax):
 
 
 def draw_bar(x, df, ax):
+    df = anlys.update_capacity(df)
 
     base_color = 'dodgerblue'  # 'skyblue'
     ax.bar(x, df[COL_TOT_CAPACITY], color=base_color, label='Total Capacity', alpha=0.25)

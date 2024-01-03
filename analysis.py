@@ -5,8 +5,9 @@ from common import *
 
 def update_analysis(df_data):
     """Execute all registered analysis and update the data in corresponding columns."""
-    df_data = _update_capacity(df_data)
-    df_data = _update_max_set(df_data)
+    # Add invocation below to register a process. comment it out to cancel.
+    df_data = update_capacity(df_data)
+    df_data = update_max_set(df_data)
     return df_data
 
 
@@ -23,7 +24,7 @@ def _valid_set_cols():
     return ret
 
 
-def _update_capacity(df_data):
+def update_capacity(df_data):
     df_data.loc[:, (COL_TOT_CAPACITY, COL_COMPLETED_SET_CAPACITY, COL_FULL_SET_CAPACITY)] = 0
     for col_weight, col_reps in _valid_set_cols():
         df_data = df_data.fillna({col_weight: 0, col_reps: 0})
@@ -34,7 +35,7 @@ def _update_capacity(df_data):
     return df_data
 
 
-def _update_max_set(df_data, min_reps_per_set=SET_THRESHOLD):
+def update_max_set(df_data, min_reps_per_set=SET_THRESHOLD):
     # Initialize the max valid weight for each row
     df_data[COL_MAX_SET] = 0
 
