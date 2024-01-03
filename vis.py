@@ -19,9 +19,9 @@ def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
     x = df[COL_DATE] if draw_skip_days else df.index
 
     ax_left = ax
-    ax_right = ax.twinx()
+    ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
-    draw_plot(x, df, ax_right)  # Plot before bar to draw the line plot on the top.
+    draw_plot(x, df, ax_right)
     draw_bar_new(x, df, ax_left)
 
     # Horizontal (X-)axis
