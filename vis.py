@@ -49,7 +49,7 @@ def draw(df, ax, title, draw_skip_days=False):
 def draw_plot(x, df, ax):
     df = anlys.update_max_set(df)
 
-    ax.plot(x, df[COL_MAX_SET], color='salmon', marker='o', label='Best Set Weight')
+    ax.plot(x, df[COL_MAX_SET_W], color='salmon', marker='o', label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
 
     return ax.get_figure()

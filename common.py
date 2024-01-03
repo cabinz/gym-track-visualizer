@@ -5,7 +5,8 @@ COL_ITEM_NAME = 'name'
 COL_TOT_CAPACITY = 'tot_capacity'
 COL_COMPLETED_SET_CAPACITY = 'completed_set_capacity'
 COL_FULL_SET_CAPACITY = 'full_set_capacity'
-COL_MAX_SET = 'max_set'
+COL_MAX_SET_W = 'max_set_weight'
+COL_MIN_SET_W = 'min_set_weight'
 
 # Configurations.
 SET_THRESHOLD = 8  # reps
