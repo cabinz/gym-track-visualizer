@@ -3,14 +3,21 @@ COL_DATE = 'date'
 COL_ITEM_NAME = 'name'
 # Column names of generated metadata.
 COL_TOT_CAPACITY = 'tot_capacity'
-COL_COMPLETED_SET_CAPACITY = 'completed_set_capacity'
-COL_FULL_SET_CAPACITY = 'full_set_capacity'
-COL_MAX_SET_W = 'max_set_weight'
-COL_MIN_SET_W = 'min_set_weight'
+COL_PASS_SET_CAP = 'pass_set_capacity'
+COL_FULL_SET_CAP = 'full_set_capacity'
+COL_MAX_PASS_W = 'max_pass_set_weight'
+COL_MIN_PASS_W = 'min_pass_set_weight'
 
 # Configurations.
-SET_THRESHOLD = 8  # reps
-FULL_SET_REPS = 12  # reps
+"""Categorization of sets by reps:
+
+    Fail Set    |    Pass Set   |   Full Set
+                |               |
+         PASS_SET_REPS   FULL_SET_REPS
+-----------------------------------------------> reps
+"""
+PASS_SET_REPS = 8  # a threshold (passing line) to exceed for being considered as a (pass) set
+FULL_SET_REPS = 12  # to be a full set
 MIN_SET_NUM = 1  # The min sequence number of sets that the visualization takes into account
 MAX_SET_NUM = 4  # The max sequence number of sets that the visualization takes into account
 

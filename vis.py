@@ -49,7 +49,7 @@ def draw(df, ax, title, draw_skip_days=False):
 def draw_plot(x, df, ax):
     df = anlys.update_weight_boundaries(df)
 
-    ax.plot(x, df[COL_MAX_SET_W], color='salmon', marker='o', label='Best Set Weight')
+    ax.plot(x, df[COL_MAX_PASS_W], color='salmon', marker='o', label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
 
     return ax.get_figure()
@@ -60,8 +60,8 @@ def draw_bar(x, df, ax):
 
     base_color = 'dodgerblue'  # 'skyblue'
     ax.bar(x, df[COL_TOT_CAPACITY], color=base_color, label='Total Capacity', alpha=0.25)
-    ax.bar(x, df[COL_COMPLETED_SET_CAPACITY], color=base_color, label='Completed Set Capacity', alpha=0.5)
-    ax.bar(x, df[COL_FULL_SET_CAPACITY], color=base_color, label='Full Set Capacity')
+    ax.bar(x, df[COL_PASS_SET_CAP], color=base_color, label='Completed Set Capacity', alpha=0.5)
+    ax.bar(x, df[COL_FULL_SET_CAP], color=base_color, label='Full Set Capacity')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
 
     return ax.get_figure()
@@ -79,11 +79,11 @@ def draw_bar_new(x, df, ax):
     base_color = 'dodgerblue'  # 'skyblue'
     for i, row in df.iterrows():
         bottom = 0  # Initialize the bottom of the stack
-        max_weight = row[COL_MAX_SET_W]
+        max_weight = row[COL_MAX_PASS_W]
 
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
         delta_alpha = 0.75
-        delta_weight = row[COL_MAX_SET_W] - row[COL_MIN_SET_W]
+        delta_weight = row[COL_MAX_PASS_W] - row[COL_MIN_PASS_W]
         for weight_col, reps_col in valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
             if pd.isnull(weight) or pd.isnull(reps):
