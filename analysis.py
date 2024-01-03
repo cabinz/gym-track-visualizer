@@ -50,7 +50,7 @@ def _update_max_set(df_data, min_reps_per_set=SET_THRESHOLD):
 if __name__ == '__main__':
     from data_loading import Loader
 
-    ldr = Loader(r'workout.xlsx')
+    ldr = Loader(TEST_FILE_PATH)
     df = ldr.get_records()
     df = update_analysis(df)
     print(df[:5])

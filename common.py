@@ -12,3 +12,5 @@ SET_THRESHOLD = 8  # reps
 FULL_SET_REPS = 12  # reps
 MIN_SET_NUM = 1  # The min sequence number of sets that the visualization takes into account
 MAX_SET_NUM = 4  # The max sequence number of sets that the visualization takes into account
+
+TEST_FILE_PATH = r'test/file/path'
