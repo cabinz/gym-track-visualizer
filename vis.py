@@ -21,8 +21,8 @@ def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
     ax_left = ax
     ax_right = ax.twinx()
 
+    draw_plot(x, df, ax_right)  # Plot before bar to draw the line plot on the top.
     draw_bar_new(x, df, ax_left)
-    draw_plot(x, df, ax_right)  # Plot after bar to draw the line plot on the top.
 
     # Horizontal (X-)axis
     if draw_skip_days:
@@ -80,7 +80,6 @@ def draw_bar_new(x, df, ax):
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
     The lightest bars accumulate capacity of sets with weights <= COL_MIN_SET_W.
     """
-    # TODO: Add grey background bars of the max possible capacity under each max pass set weight.
     df = anlys.update_weight_boundaries(df)
 
     # Draw the stacked bar chart
@@ -131,5 +130,4 @@ def draw_bar_new(x, df, ax):
 
     # Set labels and title
     ax.set_xlabel('Date')
-    ax.set_ylabel('Capacity')
-    ax.set_title('Stacked Bar Chart of Training Capacities')
+    ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
