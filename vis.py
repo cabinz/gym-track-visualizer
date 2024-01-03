@@ -18,11 +18,11 @@ def draw(df, ax, title, draw_skip_days=False):
     df = df.reset_index()
     x = df[COL_DATE] if draw_skip_days else df.index
 
-    ax1 = ax
-    draw_bar(x, df, ax1)
+    ax_left = ax
+    ax_right = ax.twinx()
 
-    ax2 = ax.twinx()
-    draw_plot(x, df, ax2)
+    draw_bar(x, df, ax_left)
+    draw_plot(x, df, ax_right)  # Plot after bar to draw the line plot on the top.
 
     # Horizontal (X-)axis
     if draw_skip_days:
@@ -32,8 +32,8 @@ def draw(df, ax, title, draw_skip_days=False):
     ax.set_xticklabels(df[COL_DATE].dt.strftime('%Y-%m-%d'), rotation=90)
 
     # Add legends for both plots
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
+    lines1, labels1 = ax_left.get_legend_handles_labels()
+    lines2, labels2 = ax_right.get_legend_handles_labels()
     cmb_labels = labels1 + labels2
     ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels),
               # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
