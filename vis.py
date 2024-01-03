@@ -44,7 +44,7 @@ def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
         # Title
         ax.set_title(title.title(), y=1.2)
     else:
-        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels))
+        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels), loc='upper left')
         # Title
         ax.set_title(title.title())
 
@@ -115,6 +115,8 @@ def draw_bar_new(x, df, ax):
         for c, a in sort_by_decr_2nd_elem(mapping.values()):
             ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color)
             bottom += c  # Update the bottom of the stack for the next sub-ba
+
+    ax.bar(x[0], 0, color=base_color, label='Capacity')  # Only for a base color legend
 
     # Set labels and title
     ax.set_xlabel('Date')
