@@ -18,18 +18,11 @@ def draw(df, ax, title, draw_skip_days=False):
     df = df.reset_index()
     x = df[COL_DATE] if draw_skip_days else df.index
 
-    # Plot the bar chart on the primary axis
-    base_color = 'dodgerblue'  # 'skyblue'
-    ax.bar(x, df[COL_TOT_CAPACITY], color=base_color, label='Total Capacity', alpha=0.25)
-    ax.bar(x, df[COL_COMPLETED_SET_CAPACITY], color=base_color, label='Completed Set Capacity', alpha=0.5)
-    ax.bar(x, df[COL_FULL_SET_CAPACITY], color=base_color, label='Full Set Capacity')
-    ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
+    ax1 = ax
+    draw_bar(x, df, ax1)
 
-    # Create a secondary axis for the line plot
     ax2 = ax.twinx()
-    # Plot the line plot on the secondary axis
-    ax2.plot(x, df[COL_MAX_SET], color='salmon', marker='o', label='Best Set Weight')
-    ax2.set_ylabel(r'Weight (kg)')
+    draw_plot(x, df, ax2)
 
     # Horizontal (X-)axis
     if draw_skip_days:
@@ -49,5 +42,24 @@ def draw(df, ax, title, draw_skip_days=False):
               # `expand` mode makes legends horizontally filled up the bounding box
               bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left', mode='expand')
     ax.set_title(title.title(), y=1.2)
+
+    return ax.get_figure()
+
+
+def draw_plot(x, df, ax):
+
+    ax.plot(x, df[COL_MAX_SET], color='salmon', marker='o', label='Best Set Weight')
+    ax.set_ylabel(r'Weight (kg)')
+
+    return ax.get_figure()
+
+
+def draw_bar(x, df, ax):
+
+    base_color = 'dodgerblue'  # 'skyblue'
+    ax.bar(x, df[COL_TOT_CAPACITY], color=base_color, label='Total Capacity', alpha=0.25)
+    ax.bar(x, df[COL_COMPLETED_SET_CAPACITY], color=base_color, label='Completed Set Capacity', alpha=0.5)
+    ax.bar(x, df[COL_FULL_SET_CAPACITY], color=base_color, label='Full Set Capacity')
+    ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
 
     return ax.get_figure()
