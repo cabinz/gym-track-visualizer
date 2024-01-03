@@ -40,7 +40,9 @@ def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
                   # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
                   # `loc` specifies the location of legends in the bonding box
                   # `expand` mode makes legends horizontally filled up the bounding box
-                  bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left', mode='expand')
+                  bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left',
+                  # mode='expand',
+                  )
         # Title
         ax.set_title(title.title(), y=1.2)
     else:
@@ -78,6 +80,7 @@ def draw_bar_new(x, df, ax):
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
     The lightest bars accumulate capacity of sets with weights <= COL_MIN_SET_W.
     """
+    # TODO: Add grey background bars of the max possible capacity under each max pass set weight.
     df = anlys.update_weight_boundaries(df)
 
     # Draw the stacked bar chart
