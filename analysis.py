@@ -7,11 +7,12 @@ def update_analysis(df_data):
     """Execute all registered analysis and update the data in corresponding columns."""
     # Add invocation below to register a process. comment it out to cancel.
     df_data = update_capacity(df_data)
-    df_data = update_max_set(df_data)
+    df_data = update_weight_boundaries(df_data)
     return df_data
 
 
 def update_capacity(df_data):
+    """Update COL_TOT_CAPACITY, COL_COMPLETED_SET_CAPACITY, COL_FULL_SET_CAPACITY columns."""
     df_data.loc[:, (COL_TOT_CAPACITY, COL_COMPLETED_SET_CAPACITY, COL_FULL_SET_CAPACITY)] = 0
     for col_weight, col_reps in valid_set_cols():
         df_data = df_data.fillna({col_weight: 0, col_reps: 0})
@@ -22,7 +23,8 @@ def update_capacity(df_data):
     return df_data
 
 
-def update_max_set(df_data, min_reps_per_set=SET_THRESHOLD):
+def update_weight_boundaries(df_data, min_reps_per_set=SET_THRESHOLD):
+    """Update COL_MIN/MAX_SET columns."""
     # Initialize the max valid weight for each row
     df_data[COL_MAX_SET_W] = 0.0
     df_data[COL_MIN_SET_W] = float('inf')
