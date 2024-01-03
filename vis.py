@@ -66,7 +66,7 @@ def draw_bar(x, df, ax):
     df = anlys.update_capacity(df)
 
     base_color = 'dodgerblue'  # 'skyblue'
-    ax.bar(x, df[COL_TOT_CAPACITY], color=base_color, label='Total Capacity', alpha=0.25)
+    ax.bar(x, df[COL_TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
     ax.bar(x, df[COL_PASS_SET_CAP], color=base_color, label='Completed Set Capacity', alpha=0.5)
     ax.bar(x, df[COL_FULL_SET_CAP], color=base_color, label='Full Set Capacity')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
@@ -82,15 +82,18 @@ def draw_bar_new(x, df, ax):
     """
     df = anlys.update_weight_boundaries(df)
 
-    # Draw the stacked bar chart
-    base_color = 'dodgerblue'  # 'skyblue'
+    # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
+    ax.bar(x, df[COL_TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity')
+
+    # Stacked bar (actual capacity)
+    base_color = 'dodgerblue'  # 'skyblue'
     for i, row in df.iterrows():
         max_weight = row[COL_MAX_PASS_W]
 
         # Background bar
-        max_possible_capacity = max_weight * FULL_SET_REPS * (MAX_SET_NUM - MIN_SET_NUM + 1)
-        ax.bar(x[i], max_possible_capacity, color=bg_color, alpha=bg_alpha)
+        # max_possible_capacity = max_weight * FULL_SET_REPS * (MAX_SET_NUM - MIN_SET_NUM + 1)
+        # ax.bar(x[i], max_possible_capacity, color=bg_color, alpha=bg_alpha)
 
         # Stacked bar
         bottom = 0  # Initialize the bottom of the stack
@@ -124,10 +127,6 @@ def draw_bar_new(x, df, ax):
             ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color)
             bottom += c  # Update the bottom of the stack for the next sub-bar
 
-    # Only for legends of capacity
-    ax.bar(x[0], 0, color=base_color, label='Actual Capacity')
-    ax.bar(x[0], 0, color=bg_color, alpha=bg_alpha, label='Target Capacity')
-
-    # Set labels and title
+    ax.bar(x[0], 0, color=base_color, label='Actual Capacity')  # Only for a legend
     ax.set_xlabel('Date')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')

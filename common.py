@@ -2,7 +2,8 @@
 COL_DATE = 'date'
 COL_ITEM_NAME = 'name'
 # Column names of generated metadata.
-COL_TOT_CAPACITY = 'tot_capacity'
+COL_TOT_CAP = 'tot_capacity'
+COL_TGT_CAP = 'target_capacity'
 COL_PASS_SET_CAP = 'pass_set_capacity'
 COL_FULL_SET_CAP = 'full_set_capacity'
 COL_MAX_PASS_W = 'max_pass_set_weight'
