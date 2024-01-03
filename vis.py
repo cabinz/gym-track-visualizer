@@ -6,7 +6,7 @@ from common import *
 import analysis as anlys
 
 
-def draw(df, ax, title, draw_skip_days=False):
+def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
     """Draw the training history chart on a given axis.
 
     The chart is a double-axis figure presenting both the capacity each day in bars,
@@ -35,13 +35,18 @@ def draw(df, ax, title, draw_skip_days=False):
     lines1, labels1 = ax_left.get_legend_handles_labels()
     lines2, labels2 = ax_right.get_legend_handles_labels()
     cmb_labels = labels1 + labels2
-    ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels),
-              # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
-              # `loc` specifies the location of legends in the bonding box
-              # `expand` mode makes legends horizontally filled up the bounding box
-              bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left', mode='expand')
-    # Title
-    ax.set_title(title.title(), y=1.2)
+    if legend_outside:
+        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels),
+                  # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
+                  # `loc` specifies the location of legends in the bonding box
+                  # `expand` mode makes legends horizontally filled up the bounding box
+                  bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left', mode='expand')
+        # Title
+        ax.set_title(title.title(), y=1.2)
+    else:
+        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels))
+        # Title
+        ax.set_title(title.title())
 
     return ax.get_figure()
 
