@@ -98,7 +98,7 @@ def draw_bar_new(x, df, ax):
         # Stacked bar
         bottom = 0  # Initialize the bottom of the stack
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
-        delta_alpha = 0.5
+        delta_alpha = 0.6
         delta_weight = row[COL_MAX_PASS_W] - row[COL_MIN_PASS_W]
         for weight_col, reps_col in valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
