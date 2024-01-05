@@ -6,7 +6,9 @@ from common import *
 import analysis as anlys
 
 
-def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
+def draw(df, ax, title,
+         draw_skip_days=False, xtick_rotation=35,
+         legend_outside=False,):
     """Draw the training history chart on a given axis.
 
     The chart is a double-axis figure presenting both the capacity each day in bars,
@@ -29,7 +31,7 @@ def draw(df, ax, title, draw_skip_days=False, legend_outside=False):
         ax.set_xticks(df[COL_DATE])
     else:
         ax.set_xticks(x, df[COL_DATE])
-    ax.set_xticklabels(df[COL_DATE].dt.strftime('%Y-%m-%d'), rotation=90)
+    ax.set_xticklabels(df[COL_DATE].dt.strftime('%Y-%m-%d'), rotation=xtick_rotation)
 
     # Add legends for both plots
     lines1, labels1 = ax_left.get_legend_handles_labels()
