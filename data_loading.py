@@ -8,7 +8,7 @@ from common import *
 
 """Represent the loader to load records as dataframe from the data file as required.
 
-Below is a excerpt of "Gym" sheet of the  (where the first row is the headers):
+Below is a excerpt of a record sheet  (where the first row cell are headers):
 
 date|machine|name|weight_0|handle_0|reps_0|xhstd_0|weight_1|handle_1|reps_1|xhstd_1|weight_2|handle_2|reps_2|xhstd_2|...
 22/11/2023|shoulder press|seated shoulder press|2.5|back|12.0|0.0|5.0|front|9.0|1.0|5.0|back|7.0|1.0|...
@@ -20,6 +20,14 @@ date|machine|name|weight_0|handle_0|reps_0|xhstd_0|weight_1|handle_1|reps_1|xhst
 class Loader:
     def __init__(self, data_file: str, sheet_names=None,
                  col_date=COL_DATE, date_format='%d%m%Y') -> None:
+        """
+        Args:
+            data_file: The path to the date file (e.g. an Excel file)
+            sheet_names: Sheets names to extract.
+                Default as None, all sheets starting with "records" will be extracted.
+            col_date: Column name of date. Default as `COL_DATE`
+            date_format: String of date format, Default as '%d%m%Y'.
+        """
         data_file = Path(data_file)
         assert data_file.exists(), f'The given path {data_file} does NOT exist'
         assert data_file.is_file(), f'The given path {data_file} is NOT a path'
@@ -29,7 +37,7 @@ class Loader:
 
         if sheet_names is None:
             xls = pd.ExcelFile(self._data_file)
-            sheet_names = [sheet_name for sheet_name in xls.sheet_names if sheet_name.startswith("Gym")]
+            sheet_names = [sheet_name for sheet_name in xls.sheet_names if sheet_name.startswith("records")]
         elif isinstance(sheet_names, str):
             sheet_names = [sheet_names]
         assert isinstance(sheet_names, list), 'Arg sheet_names should be a string or a list of strings.'
@@ -49,7 +57,8 @@ class Loader:
         self._min_date = self._df[self._col_date].min()
 
     def get_records(self, start_date: str = None, end_date: str = None, gyms: List = None) -> pd.DataFrame:
-        """Get records (within the given range of time)
+        """Get records (within the given range of time).
+        Note that the retrieved records are not in any order.
 
         Args:
             start_date (str, optional): Inclusive. Defaults to the min date in all records.

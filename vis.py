@@ -17,7 +17,7 @@ def draw(df, ax, title,
         ax.set_title(title.title())
         return ax.get_figure()
 
-    df = df.reset_index()
+    df = df.sort_values(by=COL_DATE, ascending=True).reset_index()
     x = df[COL_DATE] if draw_skip_days else df.index
 
     ax_left = ax
