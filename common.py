@@ -1,6 +1,7 @@
 # Column names of input raw data.
 COL_DATE = 'date'
 COL_ITEM_NAME = 'name'
+COL_GYM = 'gym'
 # Column names of generated metadata.
 COL_TOT_CAP = 'tot_capacity'
 COL_TGT_CAP = 'target_capacity'

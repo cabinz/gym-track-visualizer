@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 from pathlib import Path
 import warnings
@@ -46,12 +48,13 @@ class Loader:
         self._max_date = self._df[self._col_date].max()
         self._min_date = self._df[self._col_date].min()
 
-    def get_records(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_records(self, start_date: str = None, end_date: str = None, gyms: List = None) -> pd.DataFrame:
         """Get records (within the given range of time)
 
         Args:
             start_date (str, optional): Inclusive. Defaults to the min date in all records.
             end_date (str, optional): Inclusive. Defaults to the max date in all records.
+            gyms (List, optional): A list of gym names to filtered out. Default as None (all records are extracted).
 
         Returns:
             pd.DataFrame: The records being filtered out.
@@ -68,6 +71,8 @@ class Loader:
         # Filter records within the specified date range
         filtered_df = self._df.loc[
             (self._df[self._col_date] >= start_date) & (self._df[self._col_date] <= end_date)]
+        if gyms is not None:
+            filtered_df = filtered_df[filtered_df[COL_GYM].isin(gyms)]
 
         return filtered_df
 
