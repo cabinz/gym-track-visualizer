@@ -8,7 +8,8 @@ import analysis as anlys
 
 def draw(df, ax, title,
          draw_skip_days=False, xtick_rotation=35,
-         legend_outside=False,):
+         legend_outside=False,
+         bar_width=0.8):
     """Draw the training history chart on a given axis.
 
     The chart is a double-axis figure presenting both the capacity each day in bars,
@@ -24,7 +25,7 @@ def draw(df, ax, title,
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
     draw_plot(x, df, ax_right)
-    draw_bar_new(x, df, ax_left)
+    draw_bar_new(x, df, ax_left, bar_width=bar_width)
 
     # Horizontal (X-)axis
     if draw_skip_days:
@@ -76,7 +77,7 @@ def draw_bar(x, df, ax):
     return ax.get_figure()
 
 
-def draw_bar_new(x, df, ax):
+def draw_bar_new(x, df, ax, bar_width=0.8):
     """Here, capacity are accumulated regardless of the completion of each set.
 
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
@@ -86,7 +87,7 @@ def draw_bar_new(x, df, ax):
 
     # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
-    ax.bar(x, df[COL_TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity')
+    ax.bar(x, df[COL_TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity', width=bar_width)
 
     # Stacked bar (actual capacity)
     base_color = 'dodgerblue'  # 'skyblue'
@@ -126,9 +127,9 @@ def draw_bar_new(x, df, ax):
             return sorted(lt, key=lambda sub_lt: sub_lt[1], reverse=True)
 
         for c, a in sort_by_decr_2nd_elem(mapping.values()):
-            ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color)
+            ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color, width=bar_width)
             bottom += c  # Update the bottom of the stack for the next sub-bar
 
-    ax.bar(x[0], 0, color=base_color, label='Actual Capacity')  # Only for a legend
+    ax.bar(x[0], 0, color=base_color, label='Actual Capacity', width=bar_width)  # Only for a legend
     ax.set_xlabel('Date')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
