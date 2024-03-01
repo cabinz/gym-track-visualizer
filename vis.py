@@ -8,8 +8,7 @@ import analysis as anlys
 
 def draw(df, ax, title,
          draw_skip_days=False, xtick_rotation=35,
-         legend_outside=False,
-         bar_width=0.8):
+         legend_outside=False, bar_width=0.8, draw_order=False):
     """Draw the training history chart on a given axis.
 
     The chart is a double-axis figure presenting both the capacity each day in bars,
@@ -25,7 +24,7 @@ def draw(df, ax, title,
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
     draw_plot(x, df, ax_right)
-    draw_bar_new(x, df, ax_left, bar_width=bar_width)
+    draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
 
     # Horizontal (X-)axis
     if draw_skip_days:
@@ -77,7 +76,7 @@ def draw_bar(x, df, ax):
     return ax.get_figure()
 
 
-def draw_bar_new(x, df, ax, bar_width=0.8):
+def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
     """Here, capacity are accumulated regardless of the completion of each set.
 
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
@@ -93,10 +92,6 @@ def draw_bar_new(x, df, ax, bar_width=0.8):
     base_color = 'dodgerblue'  # 'skyblue'
     for i, row in df.iterrows():
         max_weight = row[COL_MAX_PASS_W]
-
-        # Background bar
-        # max_possible_capacity = max_weight * FULL_SET_REPS * (MAX_SET_NUM - MIN_SET_NUM + 1)
-        # ax.bar(x[i], max_possible_capacity, color=bg_color, alpha=bg_alpha)
 
         # Stacked bar
         bottom = 0  # Initialize the bottom of the stack
@@ -129,6 +124,21 @@ def draw_bar_new(x, df, ax, bar_width=0.8):
         for c, a in sort_by_decr_2nd_elem(mapping.values()):
             ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color, width=bar_width)
             bottom += c  # Update the bottom of the stack for the next sub-bar
+
+        # Draw the order at the bottom of the bar.
+        if draw_order and not pd.isnull(row[COL_ORDER]):
+            def num_to_order(num):
+                num = int(num)
+                if num % 10 == 1 and num != 11:
+                    return rf'${num}^{{st}}$'
+                elif num % 10 == 2 and num != 12:
+                    return rf'${num}^{{nd}}$'
+                elif num % 10 == 3 and num != 13:
+                    return rf'${num}^{{rd}}$'
+                else:
+                    return rf'${num}^{{th}}$'
+
+            ax.text(x[i], 0, num_to_order(row[COL_ORDER]), ha='center', va='bottom')
 
     ax.bar(x[0], 0, color=base_color, label='Actual Capacity', width=bar_width)  # Only for a legend
     ax.set_xlabel('Date')
