@@ -7,31 +7,49 @@ import analysis as anlys
 
 
 def draw(df, ax, title,
-         draw_skip_days=False, xtick_rotation=35,
-         legend_outside=False, bar_width=0.8, draw_order=False):
-    """Draw the training history chart on a given axis.
+         draw_skip_days=False, xtick_label_mode='day', xtick_rotation=35,
+         legend_outside=True, bar_width=0.8, draw_order=False):
+    """
+    Draw the training history chart on a given axis.
 
     The chart is a double-axis figure presenting both the capacity each day in bars,
-    and best set weight each day in line."""
+    and best set weight each day in line.
+
+    Args:
+        df: The dataframe
+        ax: The plt axis to draw on
+        title: Figure title
+        draw_skip_days: If to leave blank for skipped days between workout days
+        xtick_label_mode: 'day', 'month' or 'year'
+        xtick_rotation:  For xtick rotation
+        legend_outside: If to draw legend out of the box
+        bar_width: From range of [0, 1.0]
+        draw_order: If to draw the set order in each workout day
+
+    Returns:
+        The figure.
+    """
     if df.size < 1:
         ax.set_title(title.title())
         return ax.get_figure()
 
     df = df.sort_values(by=COL_DATE, ascending=True).reset_index()
     x = df[COL_DATE] if draw_skip_days else df.index
+    xtick_labels = get_xtick_labels(df[COL_DATE], mode=xtick_label_mode)
 
     ax_left = ax
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
+    # Draw the bars and plots.
     draw_plot(x, df, ax_right)
     draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
 
-    # Horizontal (X-)axis
+    # Draw X-axis tick labels.
     if draw_skip_days:
-        ax.set_xticks(df[COL_DATE])
+        ax.set_xticks(df[COL_DATE], xtick_labels, rotation=xtick_rotation)
     else:
-        ax.set_xticks(x, df[COL_DATE])
-    ax.set_xticklabels(df[COL_DATE].dt.strftime('%Y-%m-%d'), rotation=xtick_rotation)
+        ax.set_xticks(x, xtick_labels, rotation=xtick_rotation)
+        # ax.set_xticklabels(xtick_labels, rotation=xtick_rotation) can be used as well.
 
     # Add legends for both plots
     lines1, labels1 = ax_left.get_legend_handles_labels()
@@ -53,6 +71,27 @@ def draw(df, ax, title,
         ax.set_title(title.title())
 
     return ax.get_figure()
+
+
+def get_xtick_labels(date_series, mode='day'):
+    if not mode in ('day', 'month', 'year'):
+        raise ValueError(f'Unknown xtick_labels mode: {mode}')
+
+    if mode == 'day':
+        return date_series.dt.strftime('%Y-%m-%d')
+
+    xtick_lbls = []
+    prev = -1
+    for date in date_series:
+        cur = date.month if mode == 'month' else date.year
+        if cur != prev:
+            prev = cur
+            xtick_lbls.append(
+                date.strftime('%b, %Y') if mode == 'month'
+                else date.strftime('%Y'))
+        else:
+            xtick_lbls.append('')
+    return xtick_lbls
 
 
 def draw_plot(x, df, ax):
