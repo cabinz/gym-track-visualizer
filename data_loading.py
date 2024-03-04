@@ -62,16 +62,16 @@ class Loader:
 
         Args:
             start_date (str, optional): Inclusive. Defaults to the min date in all records.
+                Prefer format "yyyy-mm-dd".
             end_date (str, optional): Inclusive. Defaults to the max date in all records.
+                Prefer format "yyyy-mm-dd".
             gyms (List, optional): A list of gym names to filtered out. Default as None (all records are extracted).
 
         Returns:
             pd.DataFrame: The records being filtered out.
         """
-        if start_date is None:
-            start_date = self._min_date
-        if end_date is None:
-            end_date = self._max_date
+        start_date = self._min_date if start_date is None else pd.Timestamp(start_date)
+        end_date = self._max_date if end_date is None else pd.Timestamp(end_date)
         if isinstance(start_date, str):
             start_date = pd.to_datetime(start_date, dayfirst=True)
         if isinstance(end_date, str):
