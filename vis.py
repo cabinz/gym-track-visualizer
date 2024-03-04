@@ -74,7 +74,7 @@ def draw(df, ax, title,
 
 
 def get_xtick_labels(date_series, mode='day'):
-    if not mode in ('day', 'month', 'year'):
+    if mode not in ('day', 'month', 'year'):
         raise ValueError(f'Unknown xtick_labels mode: {mode}')
 
     if mode == 'day':
