@@ -85,6 +85,11 @@ class Loader:
 
         return filtered_df
 
+    def active_days(self, start_date: str = None, end_date: str = None, gyms: List = None) -> int:
+        """Retrieve the number of active (workout) days (in the given duration and gyms)."""
+        records = self.get_records(start_date, end_date, gyms)
+        return records[COL_DATE].unique().shape[0]
+
 
 if __name__ == '__main__':
     DATA_FILE = TEST_FILE_PATH
