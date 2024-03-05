@@ -47,7 +47,7 @@ def update_weight_boundaries(df_data, min_reps_per_set=PASS_SET_REPS):
     return df_data
 
 
-def get_active_days(df_data):
+def get_num_active_days(df_data) -> int:
     """Retrieve the number of active (workout) days."""
     return df_data[COL_DATE].unique().shape[0]
 
