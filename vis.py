@@ -8,7 +8,8 @@ import analysis as anlys
 
 def draw(df, ax, title,
          draw_skip_days=False, xtick_label_mode='day', xtick_rotation=35,
-         legend_outside=True, bar_width=0.8, draw_order=False):
+         legend_outside=True, bar_width=0.8, draw_order=False,
+         plot_marker='.'):
     """
     Draw the training history chart on a given axis.
 
@@ -41,7 +42,7 @@ def draw(df, ax, title,
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
     # Draw the bars and plots.
-    draw_plot(x, df, ax_right)
+    draw_plot(x, df, ax_right, marker=plot_marker)
     draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
 
     # Draw X-axis tick labels.
@@ -94,10 +95,10 @@ def get_xtick_labels(date_series, mode='day'):
     return xtick_lbls
 
 
-def draw_plot(x, df, ax):
+def draw_plot(x, df, ax, marker=None):
     df = anlys.update_weight_boundaries(df)
 
-    ax.plot(x, df[COL_MAX_PASS_W], color='salmon', marker='o', label='Best Set Weight')
+    ax.plot(x, df[COL_MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
 
     return ax.get_figure()
