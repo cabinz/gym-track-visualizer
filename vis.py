@@ -1,4 +1,5 @@
 """Processes for visualization."""
+import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -7,7 +8,7 @@ import analysis as anlys
 
 
 def draw(df, ax, title,
-         draw_skip_days=False, xtick_label_mode='day', xtick_rotation=35,
+         draw_skip_days=False, xtick_label_mode='dsparse', xtick_rotation=35,
          legend_outside=True, bar_width=0.8, draw_order=False,
          plot_marker='.'):
     """
@@ -21,7 +22,7 @@ def draw(df, ax, title,
         ax: The plt axis to draw on
         title: Figure title
         draw_skip_days: If to leave blank for skipped days between workout days
-        xtick_label_mode: 'day', 'month' or 'year'
+        xtick_label_mode: 'd', 'dsparse', 'mo', 'yr', or 'moyr'
         xtick_rotation:  For xtick rotation
         legend_outside: If to draw legend out of the box
         bar_width: From range of [0, 1.0]
@@ -74,24 +75,54 @@ def draw(df, ax, title,
     return ax.get_figure()
 
 
-def get_xtick_labels(date_series, mode='day'):
-    if mode not in ('day', 'month', 'year'):
+def get_xtick_labels(date_series, mode='date'):
+    if mode not in ('d', 'dsparse', 'mo', 'yr', 'moyr'):
         raise ValueError(f'Unknown xtick_labels mode: {mode}')
 
-    if mode == 'day':
+    if mode == 'd' or (mode == 'dsparse' and len(date_series) < 10):
         return date_series.dt.strftime('%Y-%m-%d')
-
+    
     xtick_lbls = []
-    prev = -1
-    for date in date_series:
-        cur = date.month if mode == 'month' else date.year
-        if cur != prev:
-            prev = cur
-            xtick_lbls.append(
-                date.strftime('%b, %Y') if mode == 'month'
-                else date.strftime('%Y'))
-        else:
-            xtick_lbls.append('')
+    if mode == 'dsparse':
+        # Show 10 xticks at most, ensuring the first and last dates are shown.
+        interval = math.ceil(len(date_series) / 10)
+        for i, date in enumerate(date_series):
+            if i % interval == 0 or i == len(date_series) - 1 :
+                xtick_lbls.append(date.strftime('%Y-%m-%d'))
+            else:
+                xtick_lbls.append('')
+    if mode == 'yr':
+        prev = -1
+        for date in date_series:
+            cur = date.year
+            if cur != prev:
+                prev = cur
+                xtick_lbls.append(date.strftime('%Y'))
+            else:
+                xtick_lbls.append('')
+    elif mode == 'mo':
+        prev = -1
+        for date in date_series:
+            cur = date.month
+            if cur != prev:
+                prev = cur
+                xtick_lbls.append(date.strftime('%b'))
+            else:
+                xtick_lbls.append('')
+    elif mode == 'moyr':
+        prev_mo, prev_yr = -1, -1
+        for date in date_series:
+            cur_mo, cur_yr = date.month, date.year
+            lbl = ''
+            # This block only deals with month, year is handle after this block
+            if cur_mo != prev_mo or cur_yr != prev_yr:
+                prev_mo = cur_mo
+                lbl += date.strftime('%b')
+            # Deal with year
+            if cur_yr != prev_yr:
+                prev_yr = cur_yr
+                lbl += f'\n{date.strftime("%Y")}'
+            xtick_lbls.append(lbl)
     return xtick_lbls
 
 
@@ -181,5 +212,5 @@ def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
             ax.text(x[i], 0, num_to_order(row[COL_ORDER]), ha='center', va='bottom')
 
     ax.bar(x[0], 0, color=base_color, label='Actual Capacity', width=bar_width)  # Only for a legend
-    ax.set_xlabel('Date')
+    # ax.set_xlabel('Date')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
