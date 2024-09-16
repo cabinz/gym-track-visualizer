@@ -86,8 +86,11 @@ def get_xtick_labels(date_series, mode='date'):
     if mode == 'dsparse':
         # Show 10 xticks at most, ensuring the first and last dates are shown.
         interval = math.ceil(len(date_series) / 10)
+        half_interval = interval // 2
         for i, date in enumerate(date_series):
-            if i % interval == 0 or i == len(date_series) - 1 :
+            if i == 0  or i == len(date_series) - 1 or (
+                i % interval == 0 and i + half_interval < len(date_series)
+            ):
                 xtick_lbls.append(date.strftime('%Y-%m-%d'))
             else:
                 xtick_lbls.append('')
