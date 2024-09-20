@@ -4,8 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from common import *
-from analysis import META_COLS
-import analysis as anlys
+from preprocess import META_COLS
+import preprocess as anlys
 
 
 def draw(df, ax, title,

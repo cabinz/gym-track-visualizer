@@ -17,8 +17,8 @@ class MetaDataCols:
 META_COLS = MetaDataCols()
 
 
-def update_analysis(df_data):
-    """Execute all registered analysis and update the data in corresponding columns."""
+def execute(df_data):
+    """Execute all registered proprocessing."""
     # Add invocation below to register a process. comment it out to cancel.
     df_data = update_capacity(df_data)
     df_data = update_weight_boundaries(df_data)
@@ -61,15 +61,10 @@ def update_weight_boundaries(df_data):
     return df_data
 
 
-def get_num_active_days(df_data) -> int:
-    """Retrieve the number of active (workout) days."""
-    return df_data[COL_DATE].unique().shape[0]
-
-
 if __name__ == '__main__':
-    from data_loading import Loader
+    from loading import Loader
 
     ldr = Loader(TEST_FILE_PATH)
     df = ldr.get_records()
-    df = update_analysis(df)
+    df = execute(df)
     print(df[:5])

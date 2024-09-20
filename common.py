@@ -40,3 +40,9 @@ def valid_set_cols():
         col_weight, col_reps = f'weight_{i}', f'reps_{i}'
         ret.append((col_weight, col_reps))
     return ret
+
+
+def get_num_active_days(df_data) -> int:
+    """Retrieve the number of active (workout) days."""
+    return df_data[COL_DATE].unique().shape[0]
+
