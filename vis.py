@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from common import *
+from analysis import META_COLS
 import analysis as anlys
 
 
@@ -132,7 +133,7 @@ def get_xtick_labels(date_series, mode='date'):
 def draw_plot(x, df, ax, marker=None):
     df = anlys.update_weight_boundaries(df)
 
-    ax.plot(x, df[COL_MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
+    ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
 
     return ax.get_figure()
@@ -142,9 +143,9 @@ def draw_bar(x, df, ax):
     df = anlys.update_capacity(df)
 
     base_color = 'dodgerblue'  # 'skyblue'
-    ax.bar(x, df[COL_TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
-    ax.bar(x, df[COL_PASS_SET_CAP], color=base_color, label='Completed Set Capacity', alpha=0.5)
-    ax.bar(x, df[COL_FULL_SET_CAP], color=base_color, label='Full Set Capacity')
+    ax.bar(x, df[META_COLS.TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
+    ax.bar(x, df[META_COLS.SUCC_SET_CAP], color=base_color, label='Successful Set Capacity', alpha=0.5)
+    ax.bar(x, df[META_COLS.FULL_SET_CAP], color=base_color, label='Full Set Capacity')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
 
     return ax.get_figure()
@@ -160,18 +161,18 @@ def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
 
     # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
-    ax.bar(x, df[COL_TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity', width=bar_width)
+    ax.bar(x, df[META_COLS.TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity', width=bar_width)
 
     # Stacked bar (actual capacity)
     base_color = 'dodgerblue'  # 'skyblue'
     for i, row in df.iterrows():
-        max_weight = row[COL_MAX_PASS_W]
+        max_weight = row[META_COLS.MAX_PASS_W]
 
         # Stacked bar
         bottom = 0  # Initialize the bottom of the stack
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
         delta_alpha = 0.6
-        delta_weight = row[COL_MAX_PASS_W] - row[COL_MIN_PASS_W]
+        delta_weight = row[META_COLS.MAX_PASS_W] - row[META_COLS.MIN_PASS_W]
         for weight_col, reps_col in valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
             if pd.isnull(weight) or pd.isnull(reps):
@@ -179,17 +180,17 @@ def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
             capacity = weight * reps
             if weight < max_weight:
                 if weight not in mapping:
-                    # min() is needed because weight can be smaller than row[COL_MIN_SET_W]
-                    # since COL_MIN_SET_W consider only the complete set
-                    # i.e. the lightest bars accumulate capacity of all sets with weight <= row[COL_MIN_SET_W]
+                    # min() is needed because weight can be smaller than row[MIN_SET_W]
+                    # since MIN_SET_W consider only the complete set
+                    # i.e. the lightest bars accumulate capacity of all sets with weight <= row[MIN_SET_W]
                     dist_to_max = min(max_weight - weight, delta_weight)
                     alpha = 1 - delta_alpha * (dist_to_max / delta_weight)
                     mapping[weight] = [0, alpha]
                 mapping[weight][0] += capacity
             else:
                 # This branch covers all records of weight >= max_weight
-                # (including those incomplete set with weight larger than row[COL_MAX_SET_W])
-                # i.e. the darkest bars cover accumulate of all sets with weight >= row[COL_MAX_SET_W]
+                # (including those incomplete set with weight larger than row[MAX_SET_W])
+                # i.e. the darkest bars cover accumulate of all sets with weight >= row[MAX_SET_W]
                 mapping[max_weight][0] += capacity
 
         def sort_by_decr_2nd_elem(lt):
