@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 import warnings
 
-from common import *
+from .common import *
 
 """Represent the loader to load records as dataframe from the data file as required.
 
@@ -84,11 +84,3 @@ class Loader:
             filtered_df = filtered_df[filtered_df[COL_GYM].isin(gyms)]
 
         return filtered_df
-
-
-if __name__ == '__main__':
-    DATA_FILE = TEST_FILE_PATH
-
-    loader = Loader(DATA_FILE)
-    df = loader.get_records()
-    print(df)

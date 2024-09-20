@@ -17,8 +17,6 @@ FULL_SET_REPS = 12  # ... to be a full set
 SET_ID_RANGE_L = 1  # The left bound (inclusive) of set index that the visualization takes into account
 SET_ID_RANGE_R = 4  # The right bound (inclusive) ...
 
-TEST_FILE_PATH = r'test/file/path'
-
 
 def valid_set_num():
     """Get column names of set specified by global variables MIN_SET_NUM and MAX_SET_NUM.

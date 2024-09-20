@@ -1,7 +1,8 @@
 """Functions for synthesizing statistical (meta)data columns for visualization."""
 
 from dataclasses import dataclass
-from common import *
+
+from .common import *
 
 
 @dataclass
@@ -59,12 +60,3 @@ def update_weight_boundaries(df_data):
     df_data[META_COLS.TGT_CAP] = df_data[META_COLS.MAX_PASS_W] * FULL_SET_REPS * (SET_ID_RANGE_R - SET_ID_RANGE_L + 1)
 
     return df_data
-
-
-if __name__ == '__main__':
-    from loading import Loader
-
-    ldr = Loader(TEST_FILE_PATH)
-    df = ldr.get_records()
-    df = execute(df)
-    print(df[:5])

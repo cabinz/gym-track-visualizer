@@ -3,9 +3,9 @@ import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from common import *
-from preprocess import META_COLS
-import preprocess as anlys
+from .common import *
+from .preprocess import META_COLS
+from . import preprocess as pp
 
 
 def draw(df, ax, title,
@@ -38,7 +38,7 @@ def draw(df, ax, title,
 
     df = df.sort_values(by=COL_DATE, ascending=True).reset_index()
     x = df[COL_DATE] if draw_skip_days else df.index
-    xtick_labels = get_xtick_labels(df[COL_DATE], mode=xtick_label_mode)
+    xtick_labels = _get_xtick_labels(df[COL_DATE], mode=xtick_label_mode)
 
     ax_left = ax
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
@@ -66,17 +66,16 @@ def draw(df, ax, title,
                   bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left',
                   # mode='expand',
                   )
-        # Title
         ax.set_title(title.title(), y=1.2)
+        # TODO: The title is not properly displayed without using fig.tight_layout()
     else:
         ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels), loc='upper left')
-        # Title
         ax.set_title(title.title())
 
     return ax.get_figure()
 
 
-def get_xtick_labels(date_series, mode='date'):
+def _get_xtick_labels(date_series, mode='date'):
     if mode not in ('d', 'dsparse', 'mo', 'yr', 'moyr'):
         raise ValueError(f'Unknown xtick_labels mode: {mode}')
 
@@ -131,7 +130,7 @@ def get_xtick_labels(date_series, mode='date'):
 
 
 def draw_plot(x, df, ax, marker=None):
-    df = anlys.update_weight_boundaries(df)
+    df = pp.update_weight_boundaries(df)
 
     ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
@@ -140,7 +139,7 @@ def draw_plot(x, df, ax, marker=None):
 
 
 def draw_bar(x, df, ax):
-    df = anlys.update_capacity(df)
+    df = pp.update_capacity(df)
 
     base_color = 'dodgerblue'  # 'skyblue'
     ax.bar(x, df[META_COLS.TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
@@ -157,7 +156,7 @@ def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
     The lightest bars accumulate capacity of sets with weights <= COL_MIN_SET_W.
     """
-    df = anlys.update_weight_boundaries(df)
+    df = pp.update_weight_boundaries(df)
 
     # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
