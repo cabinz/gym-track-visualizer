@@ -4,11 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from .common import *
-from .preprocess import META_COLS
+from .preprocess import META_COLS, DEFAULT_CONFIG
 from . import preprocess as pp
 
 
-def draw(df, ax, title,
+def draw(df, ax, title, config=DEFAULT_CONFIG,
          draw_skip_days=False, xtick_label_mode='dsparse', xtick_rotation=35,
          legend_outside=True, bar_width=0.8, draw_order=False,
          plot_marker='.'):
@@ -22,6 +22,7 @@ def draw(df, ax, title,
         df: The dataframe
         ax: The plt axis to draw on
         title: Figure title
+        config: the preprocesssing configuration
         draw_skip_days: If to leave blank for skipped days between workout days
         xtick_label_mode: 'd', 'dsparse', 'mo', 'yr', or 'moyr'
         xtick_rotation:  For xtick rotation
@@ -44,8 +45,8 @@ def draw(df, ax, title,
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
     # Draw the bars and plots.
-    _draw_plot(x, df, ax_right, marker=plot_marker)
-    _draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
+    _draw_plot(x, df, ax_right, config=config, marker=plot_marker)
+    _draw_bar_new(x, df, ax_left, config=config, bar_width=bar_width, draw_order=draw_order)
 
     # Draw X-axis tick labels.
     if draw_skip_days:
@@ -129,8 +130,8 @@ def _get_xtick_labels(date_series, mode='date'):
     return xtick_lbls
 
 
-def _draw_plot(x, df, ax, marker=None):
-    df = pp.update_weight_boundaries(df)
+def _draw_plot(x, df, ax, config=DEFAULT_CONFIG, marker=None):
+    df = pp.update_weight_boundaries(df, config)
 
     ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
@@ -138,8 +139,8 @@ def _draw_plot(x, df, ax, marker=None):
     return ax.get_figure()
 
 
-def _draw_bar(x, df, ax):
-    df = pp.update_capacity(df)
+def _draw_bar(x, df, ax, config=DEFAULT_CONFIG):
+    df = pp.update_capacity(df, config)
 
     base_color = 'dodgerblue'  # 'skyblue'
     ax.bar(x, df[META_COLS.TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
@@ -150,13 +151,13 @@ def _draw_bar(x, df, ax):
     return ax.get_figure()
 
 
-def _draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
+def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=False):
     """Here, capacity are accumulated regardless of the completion of each set.
 
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
     The lightest bars accumulate capacity of sets with weights <= COL_MIN_SET_W.
     """
-    df = pp.update_weight_boundaries(df)
+    df = pp.update_weight_boundaries(df, config)
 
     # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
@@ -172,7 +173,7 @@ def _draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
         delta_alpha = 0.6
         delta_weight = row[META_COLS.MAX_PASS_W] - row[META_COLS.MIN_PASS_W]
-        for weight_col, reps_col in valid_set_cols():
+        for weight_col, reps_col in config.valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
             if pd.isnull(weight) or pd.isnull(reps):
                 continue
