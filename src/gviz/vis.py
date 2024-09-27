@@ -44,8 +44,8 @@ def draw(df, ax, title,
     ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
 
     # Draw the bars and plots.
-    draw_plot(x, df, ax_right, marker=plot_marker)
-    draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
+    _draw_plot(x, df, ax_right, marker=plot_marker)
+    _draw_bar_new(x, df, ax_left, bar_width=bar_width, draw_order=draw_order)
 
     # Draw X-axis tick labels.
     if draw_skip_days:
@@ -129,7 +129,7 @@ def _get_xtick_labels(date_series, mode='date'):
     return xtick_lbls
 
 
-def draw_plot(x, df, ax, marker=None):
+def _draw_plot(x, df, ax, marker=None):
     df = pp.update_weight_boundaries(df)
 
     ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
@@ -138,7 +138,7 @@ def draw_plot(x, df, ax, marker=None):
     return ax.get_figure()
 
 
-def draw_bar(x, df, ax):
+def _draw_bar(x, df, ax):
     df = pp.update_capacity(df)
 
     base_color = 'dodgerblue'  # 'skyblue'
@@ -150,7 +150,7 @@ def draw_bar(x, df, ax):
     return ax.get_figure()
 
 
-def draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
+def _draw_bar_new(x, df, ax, bar_width=0.8, draw_order=False):
     """Here, capacity are accumulated regardless of the completion of each set.
 
     The darkest bars accumulate capacity of sets with weights >= COL_MAX_SET_W.
