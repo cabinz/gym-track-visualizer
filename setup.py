@@ -23,6 +23,6 @@ if __name__ == '__main__':
             where='src',
             exclude=['tests', 'tests.*']
         ),
-        python_requires='>=3.8',
+        python_requires='>=3.10',
         install_requires=requirements,
     )
