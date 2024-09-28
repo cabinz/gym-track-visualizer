@@ -8,6 +8,10 @@ from .preprocess import META_COLS, DEFAULT_CONFIG
 from . import preprocess as pp
 
 
+YLIM_MARGIN = 0.2  # Margin of the y-axis limit for legend
+YLIM_SCALE = 1 + YLIM_MARGIN
+
+
 def draw(df, ax, title, config=DEFAULT_CONFIG,
          draw_skip_days=False, xtick_label_mode='dsparse', xtick_rotation=35,
          legend_outside=True, bar_width=0.8, draw_order=False,
@@ -42,11 +46,13 @@ def draw(df, ax, title, config=DEFAULT_CONFIG,
     xtick_labels = _get_xtick_labels(df[COL_DATE], mode=xtick_label_mode)
 
     ax_left = ax
-    ax_right = ax.twinx()  # The twin ax will be drawn after (atop) the original one.
+    # The twin ax will be drawn after (atop) the original one.
+    ax_right = ax.twinx()
 
     # Draw the bars and plots.
     _draw_plot(x, df, ax_right, config=config, marker=plot_marker)
-    _draw_bar_new(x, df, ax_left, config=config, bar_width=bar_width, draw_order=draw_order)
+    _draw_bar_new(x, df, ax_left, config=config,
+                  bar_width=bar_width, draw_order=draw_order)
 
     # Draw X-axis tick labels.
     if draw_skip_days:
@@ -59,19 +65,9 @@ def draw(df, ax, title, config=DEFAULT_CONFIG,
     lines1, labels1 = ax_left.get_legend_handles_labels()
     lines2, labels2 = ax_right.get_legend_handles_labels()
     cmb_labels = labels1 + labels2
-    if legend_outside:
-        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels),
-                  # `bbox_to_anchor` bounding box (x0, y0, width, height) default as (0, 0, 1, 1)
-                  # `loc` specifies the location of legends in the bonding box
-                  # `expand` mode makes legends horizontally filled up the bounding box
-                  bbox_to_anchor=(0, 1.02, 1, 0.2), loc='lower left',
-                  # mode='expand',
-                  )
-        ax.set_title(title.title(), y=1.2)
-        # TODO: The title is not properly displayed without using fig.tight_layout()
-    else:
-        ax.legend(lines1 + lines2, cmb_labels, ncol=len(cmb_labels), loc='upper left')
-        ax.set_title(title.title())
+    ax.legend(lines1 + lines2, cmb_labels,
+              ncol=len(cmb_labels), loc='upper left')
+    ax.set_title(title.title())
 
     return ax.get_figure()
 
@@ -82,14 +78,14 @@ def _get_xtick_labels(date_series, mode='date'):
 
     if mode == 'd' or (mode == 'dsparse' and len(date_series) < 10):
         return date_series.dt.strftime('%Y-%m-%d')
-    
+
     xtick_lbls = []
     if mode == 'dsparse':
         # Show 10 xticks at most, ensuring the first and last dates are shown.
         interval = math.ceil(len(date_series) / 10)
         half_interval = interval // 2
         for i, date in enumerate(date_series):
-            if i == 0  or i == len(date_series) - 1 or (
+            if i == 0 or i == len(date_series) - 1 or (
                 i % interval == 0 and i + half_interval < len(date_series)
             ):
                 xtick_lbls.append(date.strftime('%Y-%m-%d'))
@@ -133,8 +129,10 @@ def _get_xtick_labels(date_series, mode='date'):
 def _draw_plot(x, df, ax, config=DEFAULT_CONFIG, marker=None):
     df = pp.update_weight_boundaries(df, config)
 
-    ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon', marker=marker, label='Best Set Weight')
+    ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon',
+            marker=marker, label='Best Set Weight')
     ax.set_ylabel(r'Weight (kg)')
+    ax.set_ylim(0, df[META_COLS.MAX_PASS_W].max() * YLIM_SCALE)
 
     return ax.get_figure()
 
@@ -143,9 +141,12 @@ def _draw_bar(x, df, ax, config=DEFAULT_CONFIG):
     df = pp.update_capacity(df, config)
 
     base_color = 'dodgerblue'  # 'skyblue'
-    ax.bar(x, df[META_COLS.TOT_CAP], color=base_color, label='Total Capacity', alpha=0.25)
-    ax.bar(x, df[META_COLS.SUCC_SET_CAP], color=base_color, label='Successful Set Capacity', alpha=0.5)
-    ax.bar(x, df[META_COLS.FULL_SET_CAP], color=base_color, label='Full Set Capacity')
+    ax.bar(x, df[META_COLS.TOT_CAP], color=base_color,
+           label='Total Capacity', alpha=0.25)
+    ax.bar(x, df[META_COLS.SUCC_SET_CAP], color=base_color,
+           label='Successful Set Capacity', alpha=0.5)
+    ax.bar(x, df[META_COLS.FULL_SET_CAP],
+           color=base_color, label='Full Set Capacity')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
 
     return ax.get_figure()
@@ -161,7 +162,8 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
 
     # Background bars (target capacity)
     bg_color, bg_alpha = 'grey', 0.15
-    ax.bar(x, df[META_COLS.TGT_CAP], color=bg_color, alpha=bg_alpha, label='Target Capacity', width=bar_width)
+    ax.bar(x, df[META_COLS.TGT_CAP], color=bg_color,
+           alpha=bg_alpha, label='Target Capacity', width=bar_width)
 
     # Stacked bar (actual capacity)
     base_color = 'dodgerblue'  # 'skyblue'
@@ -197,7 +199,8 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
             return sorted(lt, key=lambda sub_lt: sub_lt[1], reverse=True)
 
         for c, a in sort_by_decr_2nd_elem(mapping.values()):
-            ax.bar(x[i], c, bottom=bottom, alpha=a, color=base_color, width=bar_width)
+            ax.bar(x[i], c, bottom=bottom, alpha=a,
+                   color=base_color, width=bar_width)
             bottom += c  # Update the bottom of the stack for the next sub-bar
 
         # Draw the order at the bottom of the bar.
@@ -213,8 +216,12 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
                 else:
                     return rf'${num}^{{th}}$'
 
-            ax.text(x[i], 0, num_to_order(row[COL_ORDER]), ha='center', va='bottom')
+            ax.text(x[i], 0, num_to_order(row[COL_ORDER]),
+                    ha='center', va='bottom')
 
-    ax.bar(x[0], 0, color=base_color, label='Actual Capacity', width=bar_width)  # Only for a legend
+    ax.bar(x[0], 0, color=base_color, label='Actual Capacity',
+           width=bar_width)  # Only for a legend
     # ax.set_xlabel('Date')
     ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
+    # Leave some margin for the legend
+    ax.set_ylim(0, df[META_COLS.TGT_CAP].max() * YLIM_SCALE)
