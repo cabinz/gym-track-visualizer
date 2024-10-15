@@ -174,7 +174,8 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
         bottom = 0  # Initialize the bottom of the stack
         mapping = {max_weight: [0, 1.0]}  # weight -> [capacity, alpha]
         delta_alpha = 0.6
-        delta_weight = row[META_COLS.MAX_PASS_W] - row[META_COLS.MIN_PASS_W]
+        delta_weight = row[META_COLS.MAX_PASS_W] - row[META_COLS.MIN_W]
+        # delta_weight = row[META_COLS.MAX_PASS_W] - row[META_COLS.MIN_PASS_W]
         for weight_col, reps_col in config.valid_set_cols():
             weight, reps = row[weight_col], row[reps_col]
             if pd.isnull(weight) or pd.isnull(reps):
@@ -186,6 +187,11 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
                     # since MIN_SET_W consider only the complete set
                     # i.e. the lightest bars accumulate capacity of all sets with weight <= row[MIN_SET_W]
                     dist_to_max = min(max_weight - weight, delta_weight)
+                    if delta_weight == 0:
+                        print(f'Warning: delta_weight is 0 at row {i}.')
+                        print(f'dist_to_max: {dist_to_max}')
+                        print(f'weight: {weight}, max_weight: {max_weight}')
+                        print(f'row: {row}')
                     alpha = 1 - delta_alpha * (dist_to_max / delta_weight)
                     mapping[weight] = [0, alpha]
                 mapping[weight][0] += capacity

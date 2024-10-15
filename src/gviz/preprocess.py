@@ -13,7 +13,8 @@ class MetaDataCols:
     SUCC_SET_CAP: str = 'successful_set_capacity'
     FULL_SET_CAP: str = 'full_set_capacity'
     MAX_PASS_W: str = 'max_pass_set_weight'
-    MIN_PASS_W: str = 'min_pass_set_weight'
+    MAX_W: str = 'max_set_weight (maybe incomplete)'
+    MIN_W: str = 'min_set_weight (maybe incomplete)'
 
 
 @dataclass
@@ -93,19 +94,21 @@ def update_weight_boundaries(df_data, config=DEFAULT_CONFIG):
 
     Note that the values are min/max weight among all "completed" sets (with reps exceeding the threshold).
     """
-    # Initialize the max valid weight for each row
+    # Initialize
     df_data[META_COLS.MAX_PASS_W] = 0.0
-    df_data[META_COLS.MIN_PASS_W] = float('inf')
+    df_data[META_COLS.MAX_W] = 0.0
+    df_data[META_COLS.MIN_W] = float('inf')
 
-    # Iterate over the valid set columns
+    # Update
+    weight_cols, reps_cols = zip(*config.valid_set_cols())
+    df_data.loc[:, META_COLS.MAX_W] = df_data.loc[:, weight_cols].max(axis=1)
+    df_data.loc[:, META_COLS.MIN_W] = df_data.loc[:, weight_cols].min(axis=1)
+    # Select rows where the number of reps is greater than or equal to the minimum threshold
+    # Then update the max weight for these rows
     for col_weight, col_reps in config.valid_set_cols():
-        # Select rows where the number of reps is greater than or equal to the minimum threshold
         cond_completed_set = df_data[col_reps] >= config.MIN_SET_REPS
-        # Update the max weight for these rows
         df_data.loc[cond_completed_set, META_COLS.MAX_PASS_W] = df_data.loc[
             cond_completed_set, [META_COLS.MAX_PASS_W, col_weight]].max(axis=1)
-        df_data.loc[cond_completed_set, META_COLS.MIN_PASS_W] = df_data.loc[
-            cond_completed_set, [META_COLS.MIN_PASS_W, col_weight]].min(axis=1)
 
     df_data[META_COLS.TGT_CAP] = df_data[META_COLS.MAX_PASS_W] * \
         config.FULL_SET_REPS * (config.SET_ID_RANGE_R -
