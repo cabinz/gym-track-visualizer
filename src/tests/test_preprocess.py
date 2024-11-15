@@ -7,7 +7,8 @@ config = PreprocessConfig(
     MIN_SET_REPS=5,
     FULL_SET_REPS=5,
     SET_ID_RANGE_L=1,
-    SET_ID_RANGE_R=5
+    SET_ID_RANGE_R=5,
+    WEIGHT_STD_UOM='lb'
 )
 
 ldr = Loader(TEST_FILE_PATH)

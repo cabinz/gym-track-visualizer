@@ -131,7 +131,7 @@ def _draw_plot(x, df, ax, config=DEFAULT_CONFIG, marker=None):
 
     ax.plot(x, df[META_COLS.MAX_PASS_W], color='salmon',
             marker=marker, label='Best Set Weight')
-    ax.set_ylabel(r'Weight (kg)')
+    ax.set_ylabel(rf'Weight ({config.WEIGHT_STD_UOM})')
     ax.set_ylim(0, df[META_COLS.MAX_PASS_W].max() * YLIM_SCALE)
 
     return ax.get_figure()
@@ -147,7 +147,7 @@ def _draw_bar(x, df, ax, config=DEFAULT_CONFIG):
            label='Successful Set Capacity', alpha=0.5)
     ax.bar(x, df[META_COLS.FULL_SET_CAP],
            color=base_color, label='Full Set Capacity')
-    ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
+    ax.set_ylabel(rf'Capacity ({config.WEIGHT_STD_UOM}$\cdot$reps)')
 
     return ax.get_figure()
 
@@ -228,6 +228,6 @@ def _draw_bar_new(x, df, ax, config=DEFAULT_CONFIG, bar_width=0.8, draw_order=Fa
     ax.bar(x[0], 0, color=base_color, label='Actual Capacity',
            width=bar_width)  # Only for a legend
     # ax.set_xlabel('Date')
-    ax.set_ylabel(r'Capacity (kg$\cdot$reps)')
+    ax.set_ylabel(rf'Capacity ({config.WEIGHT_STD_UOM}$\cdot$reps)')
     # Leave some margin for the legend
     ax.set_ylim(0, df[META_COLS.TGT_CAP].max() * YLIM_SCALE)
